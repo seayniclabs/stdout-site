@@ -1,0 +1,60 @@
+---
+import '../../styles/global.css';
+import { eq, desc } from 'drizzle-orm';
+import { getDb, schema } from '../../lib/db';
+
+const db = getDb();
+const pending = db.select().from(schema.communitySubmissions)
+  .where(eq(schema.communitySubmissions.status, 'pending'))
+  .orderBy(desc(schema.communitySubmissions.valueScore))
+  .all();
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin Queue — StdOut Site</title>
+</head>
+<body>
+  <nav class="admin-nav">
+    <strong>StdOut Site Admin</strong>
+    <a href="/admin">Queue</a>
+    <a href="/admin/published">Published</a>
+    <button type="button" id="logout" class="btn btn-ghost btn-sm">Logout</button>
+  </nav>
+  <main class="container" style="padding: 32px 24px">
+    <h1>Pending submissions ({pending.length})</h1>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Title</th><th>Type</th><th>Score</th><th>Submitted</th><th></th></tr>
+        </thead>
+        <tbody>
+          {pending.map(row => (
+            <tr>
+              <td>{row.sanitizedTitle}</td>
+              <td><span class="badge">{row.docType}</span></td>
+              <td class="mono">{row.valueScore ?? '—'}</td>
+              <td class="mono">{row.createdAt.toISOString().slice(0, 10)}</td>
+              <td><a href={`/admin/review/${row.id}`} class="btn btn-secondary btn-sm">Review</a></td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    {pending.length === 0 && <p style="margin-top:16px;color:var(--text-muted)">No pending submissions.</p>}
+  </main>
+</body>
+</html>
+
+<script>
+  document.getElementById('logout')?.addEventListener('click', async () => {
+    await fetch('/admin/api/logout', { method: 'POST' });
+    location.href = '/admin/login';
+  });
+</script>
+
+<style>
+  .admin-nav { display: flex; gap: 16px; align-items: center; padding: 14px 24px; border-bottom: 1px solid var(--border); background: var(--bg-surface); }
+  .admin-nav a { font-size: 13px; color: var(--text-muted); }
+</style>

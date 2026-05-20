@@ -1,0 +1,80 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import { eq, desc } from 'drizzle-orm';
+import { getDb, schema } from '../../lib/db';
+
+const db = getDb();
+const docs = db.select().from(schema.communitySubmissions)
+  .where(eq(schema.communitySubmissions.status, 'published'))
+  .orderBy(desc(schema.communitySubmissions.publishedAt))
+  .all();
+---
+<SiteLayout title="Community Library — StdOut" description="Browse community runbooks, postmortems, and guides for homelab operators.">
+  <main class="container page">
+    <h1>Community Library</h1>
+    <p class="lead">Runbooks and postmortems synced to self-hosted StdOut instances. Contribute from your instance after sanitization.</p>
+
+    <div class="filters">
+      <input type="search" id="search" placeholder="Search titles and tags…" class="input" />
+      <select id="typeFilter" class="input" style="max-width: 200px">
+        <option value="">All types</option>
+        <option value="runbook">Runbook</option>
+        <option value="postmortem">Postmortem</option>
+        <option value="guide">Guide</option>
+        <option value="note">Note</option>
+      </select>
+    </div>
+
+    <div class="doc-grid" id="docGrid">
+      {docs.map(doc => (
+        <a
+          href={`/library/${doc.id}`}
+          class="doc-card card"
+          data-title={doc.sanitizedTitle.toLowerCase()}
+          data-tags={(doc.tags || '').toLowerCase()}
+          data-type={doc.docType}
+        >
+          <span class="badge">{doc.docType}</span>
+          <h2>{doc.sanitizedTitle}</h2>
+          {doc.tags && <p class="mono tags">{doc.tags}</p>}
+          {doc.publishedAt && (
+            <time class="mono date">{doc.publishedAt.toISOString().slice(0, 10)}</time>
+          )}
+        </a>
+      ))}
+    </div>
+    {docs.length === 0 && <p>No published docs yet.</p>}
+  </main>
+</SiteLayout>
+
+<script>
+  const search = document.getElementById('search') as HTMLInputElement;
+  const typeFilter = document.getElementById('typeFilter') as HTMLSelectElement;
+  const cards = document.querySelectorAll('.doc-card');
+
+  function filter() {
+    const q = search.value.toLowerCase();
+    const t = typeFilter.value;
+    cards.forEach(card => {
+      const el = card as HTMLElement;
+      const matchQ = !q || (el.dataset.title || '').includes(q) || (el.dataset.tags || '').includes(q);
+      const matchT = !t || el.dataset.type === t;
+      (card as HTMLElement).style.display = matchQ && matchT ? '' : 'none';
+    });
+  }
+  search?.addEventListener('input', filter);
+  typeFilter?.addEventListener('change', filter);
+</script>
+
+<style>
+  .page { padding: 40px 24px 60px; }
+  .page h1 { font-size: 28px; margin-bottom: 8px; }
+  .lead { color: var(--text-secondary); margin-bottom: 28px; }
+  .filters { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 24px; }
+  .filters .input { flex: 1; min-width: 200px; }
+  .doc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+  .doc-card { display: block; color: inherit; }
+  .doc-card h2 { font-size: 16px; margin: 10px 0 8px; color: var(--text); }
+  .tags { font-size: 11px; color: var(--text-muted); }
+  .date { font-size: 11px; color: var(--text-muted); display: block; margin-top: 8px; }
+</style>

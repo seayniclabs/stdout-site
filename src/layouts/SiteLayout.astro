@@ -1,0 +1,48 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+}
+const { title, description = 'StdOut — self-hosted incident companion for homelab builders.' } = Astro.props;
+const storeUrl = 'https://store.seayniclabs.com/products/stdout-self-host';
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content={description} />
+  <title>{title}</title>
+  <meta name="theme-color" content="#F97316" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <style>@import '../styles/fonts.css';</style>
+</head>
+<body>
+  <nav class="site-nav">
+    <a href="/" class="site-nav-brand">
+      <img src="/logo.svg" alt="" width="28" height="28" />
+      <span>StdOut</span>
+    </a>
+    <div class="site-nav-links">
+      <a href="/#how" class="site-nav-link">How it works</a>
+      <a href="/#features" class="site-nav-link">Features</a>
+      <a href="/library" class="site-nav-link">Library</a>
+      <a href="https://github.com/seayniclabs/stdout" class="site-nav-link" target="_blank" rel="noopener">Docs</a>
+      <a href="/#pricing" class="site-nav-link">Pricing</a>
+      <a href={storeUrl} class="btn btn-primary btn-sm">Self-Host $149</a>
+    </div>
+  </nav>
+  <slot />
+  <footer class="site-footer">
+    <div class="site-footer-links">
+      <a href="https://github.com/seayniclabs/stdout" target="_blank" rel="noopener">GitHub</a>
+      <a href="/library">Community Library</a>
+      <a href={storeUrl} target="_blank" rel="noopener">Get StdOut</a>
+      <a href="https://seayniclabs.com">Seaynic Labs</a>
+    </div>
+    <span class="mono" style="font-size: 11px; color: var(--text-muted);">StdOut by Seaynic Labs</span>
+  </footer>
+</body>
+</html>

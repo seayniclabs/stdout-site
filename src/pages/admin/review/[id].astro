@@ -1,0 +1,87 @@
+---
+import '../../../styles/global.css';
+import { eq } from 'drizzle-orm';
+import { getDb, schema } from '../../../lib/db';
+import { renderMarkdown } from '../../../lib/markdown';
+
+const { id } = Astro.params;
+if (!id) return Astro.redirect('/admin');
+
+const db = getDb();
+const sub = db.select().from(schema.communitySubmissions)
+  .where(eq(schema.communitySubmissions.id, id))
+  .get();
+
+if (!sub) return new Response('Not found', { status: 404 });
+
+const html = renderMarkdown(sub.sanitizedContent);
+let sanitizationLog: unknown[] = [];
+try {
+  sanitizationLog = JSON.parse(sub.sanitizationLog || '[]');
+} catch { /* ignore */ }
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Review — {sub.sanitizedTitle}</title>
+</head>
+<body>
+  <nav class="admin-nav">
+    <a href="/admin">← Queue</a>
+    <strong>{sub.sanitizedTitle}</strong>
+  </nav>
+  <main class="container" style="padding: 24px; max-width: 900px">
+    <p class="mono meta">Type: {sub.docType} · Score: {sub.valueScore} · Status: {sub.status}</p>
+    {sub.tags && <p class="mono meta">Tags: {sub.tags}</p>}
+
+    <section class="card" style="margin: 20px 0">
+      <h2>Content</h2>
+      <article class="prose" set:html={html} />
+    </section>
+
+    {sanitizationLog.length > 0 && (
+      <section class="card" style="margin-bottom: 20px">
+        <h2>Sanitization log</h2>
+        <pre class="mono" style="font-size:11px;overflow:auto">{JSON.stringify(sanitizationLog, null, 2)}</pre>
+      </section>
+    )}
+
+    <section class="card">
+      <h2>Review</h2>
+      <textarea id="notes" class="textarea" placeholder="Review notes (optional)">{sub.reviewNotes || ''}</textarea>
+      <div style="display:flex;gap:12px;margin-top:12px">
+        <button type="button" id="approve" class="btn btn-primary">Publish</button>
+        <button type="button" id="reject" class="btn btn-secondary">Reject</button>
+      </div>
+      <p id="status" class="mono" style="margin-top:12px;font-size:12px;color:var(--text-muted)"></p>
+    </section>
+  </main>
+</body>
+</html>
+
+<script define:vars={{ submissionId: sub.id }}>
+  const notes = document.getElementById('notes');
+  const status = document.getElementById('status');
+  async function act(endpoint) {
+    const res = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: submissionId, reviewNotes: notes?.value || '' }),
+    });
+    const d = await res.json();
+    if (res.ok) {
+      status.textContent = 'Saved: ' + d.status;
+      setTimeout(() => { location.href = '/admin'; }, 800);
+    } else {
+      status.textContent = d.error || 'Failed';
+    }
+  }
+  document.getElementById('approve')?.addEventListener('click', () => act('/admin/api/approve'));
+  document.getElementById('reject')?.addEventListener('click', () => act('/admin/api/reject'));
+</script>
+
+<style>
+  .admin-nav { display: flex; gap: 16px; padding: 14px 24px; border-bottom: 1px solid var(--border); background: var(--bg-surface); }
+  .meta { font-size: 12px; color: var(--text-muted); margin-bottom: 4px; }
+</style>

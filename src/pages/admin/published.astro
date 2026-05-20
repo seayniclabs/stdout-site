@@ -1,0 +1,72 @@
+---
+import '../../styles/global.css';
+import { eq, desc } from 'drizzle-orm';
+import { getDb, schema } from '../../lib/db';
+
+const db = getDb();
+const published = db.select().from(schema.communitySubmissions)
+  .where(eq(schema.communitySubmissions.status, 'published'))
+  .orderBy(desc(schema.communitySubmissions.publishedAt))
+  .all();
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Published — StdOut Site Admin</title>
+</head>
+<body>
+  <nav class="admin-nav">
+    <strong>StdOut Site Admin</strong>
+    <a href="/admin">Queue</a>
+    <a href="/admin/published">Published</a>
+    <button type="button" id="logout" class="btn btn-ghost btn-sm">Logout</button>
+  </nav>
+  <main class="container" style="padding: 32px 24px">
+    <h1>Published ({published.length})</h1>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Title</th><th>Type</th><th>Version</th><th>Published</th><th></th></tr>
+        </thead>
+        <tbody>
+          {published.map(row => (
+            <tr>
+              <td><a href={`/library/${row.id}`} target="_blank">{row.sanitizedTitle}</a></td>
+              <td><span class="badge">{row.docType}</span></td>
+              <td class="mono">v{row.version}</td>
+              <td class="mono">{row.publishedAt?.toISOString().slice(0, 10) ?? '—'}</td>
+              <td>
+                <button type="button" class="btn btn-ghost btn-sm withdraw" data-id={row.id}>Withdraw</button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </main>
+</body>
+</html>
+
+<script>
+  document.getElementById('logout')?.addEventListener('click', async () => {
+    await fetch('/admin/api/logout', { method: 'POST' });
+    location.href = '/admin/login';
+  });
+  document.querySelectorAll('.withdraw').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const id = (btn as HTMLElement).dataset.id;
+      if (!id || !confirm('Withdraw this doc from community sync?')) return;
+      await fetch('/admin/api/withdraw', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id }),
+      });
+      location.reload();
+    });
+  });
+</script>
+
+<style>
+  .admin-nav { display: flex; gap: 16px; align-items: center; padding: 14px 24px; border-bottom: 1px solid var(--border); background: var(--bg-surface); }
+</style>

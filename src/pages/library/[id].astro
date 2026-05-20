@@ -1,0 +1,46 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import { eq } from 'drizzle-orm';
+import { getDb, schema } from '../../lib/db';
+import { renderMarkdown } from '../../lib/markdown';
+
+const { id } = Astro.params;
+if (!id) return Astro.redirect('/library');
+
+const db = getDb();
+const doc = db.select().from(schema.communitySubmissions)
+  .where(eq(schema.communitySubmissions.id, id))
+  .get();
+
+if (!doc || doc.status !== 'published') {
+  return new Response('Not found', { status: 404 });
+}
+
+const html = renderMarkdown(doc.sanitizedContent);
+const storeUrl = 'https://store.seayniclabs.com/products/stdout-self-host';
+---
+<SiteLayout title={`${doc.sanitizedTitle} — StdOut Library`}>
+  <main class="container page">
+    <a href="/library" class="back mono">← Library</a>
+    <header class="doc-header">
+      <span class="badge">{doc.docType}</span>
+      <h1>{doc.sanitizedTitle}</h1>
+      {doc.tags && <p class="mono tags">{doc.tags}</p>}
+    </header>
+    <article class="prose card" set:html={html} />
+    <div class="cta card">
+      <p>Running StdOut? Contribute a sanitized doc from your knowledge base — or get started:</p>
+      <a href={storeUrl} class="btn btn-primary" target="_blank" rel="noopener">Self-Host $149</a>
+    </div>
+  </main>
+</SiteLayout>
+
+<style>
+  .page { padding: 40px 24px 60px; max-width: 800px; }
+  .back { font-size: 12px; color: var(--text-muted); display: inline-block; margin-bottom: 20px; }
+  .doc-header h1 { font-size: 26px; margin: 12px 0; }
+  .tags { color: var(--text-muted); font-size: 12px; }
+  .prose { margin: 24px 0; padding: 24px; }
+  .cta { margin-top: 24px; }
+  .cta p { margin-bottom: 12px; color: var(--text-secondary); font-size: 14px; }
+</style>

@@ -1,0 +1,53 @@
+---
+import '../../styles/global.css';
+import '../../styles/fonts.css';
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Login — StdOut Site</title>
+  <style>@import '../../styles/fonts.css';</style>
+</head>
+<body>
+  <main class="login-box card">
+    <h1>StdOut Site Admin</h1>
+    <form id="loginForm">
+      <label>Email <input type="email" name="email" required class="input" /></label>
+      <label>Password <input type="password" name="password" required class="input" /></label>
+      <button type="submit" class="btn btn-primary" style="width:100%">Log in</button>
+      <p id="err" class="err"></p>
+    </form>
+  </main>
+</body>
+</html>
+
+<script>
+  document.getElementById('loginForm')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const fd = new FormData(e.target as HTMLFormElement);
+    const res = await fetch('/admin/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: fd.get('email'),
+        password: fd.get('password'),
+      }),
+    });
+    if (res.ok) location.href = '/admin';
+    else {
+      const d = await res.json().catch(() => ({}));
+      const err = document.getElementById('err');
+      if (err) err.textContent = (d as { error?: string }).error || 'Login failed';
+    }
+  });
+</script>
+
+<style>
+  body { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 24px; }
+  .login-box { max-width: 360px; width: 100%; padding: 32px; }
+  .login-box h1 { font-size: 20px; margin-bottom: 20px; }
+  label { display: block; margin-bottom: 14px; font-size: 13px; color: var(--text-secondary); }
+  .err { color: var(--warning); font-size: 13px; margin-top: 12px; }
+</style>
