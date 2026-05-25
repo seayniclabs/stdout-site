@@ -4,9 +4,28 @@ import '../styles/global.css';
 interface Props {
   title: string;
   description?: string;
+  ogImage?: string;
+  canonicalUrl?: string;
 }
-const { title, description = 'StdOut — self-hosted incident companion for homelab builders.' } = Astro.props;
+const {
+  title,
+  description = 'StdOut — self-hosted incident companion for homelab builders.',
+  ogImage = 'https://stdout.seayniclabs.com/og-image.png',
+  canonicalUrl = Astro.url.href,
+} = Astro.props;
 const storeUrl = 'https://store.seayniclabs.com/products/stdout-self-host';
+const jsonLd = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'StdOut',
+  url: 'https://stdout.seayniclabs.com',
+  description,
+  publisher: {
+    '@type': 'Organization',
+    name: 'Seaynic Labs',
+    url: 'https://seayniclabs.com',
+  },
+});
 ---
 <!doctype html>
 <html lang="en">
@@ -15,8 +34,20 @@ const storeUrl = 'https://store.seayniclabs.com/products/stdout-self-host';
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content={description} />
   <title>{title}</title>
+  <link rel="canonical" href={canonicalUrl} />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="StdOut" />
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content={description} />
+  <meta property="og:url" content={canonicalUrl} />
+  <meta property="og:image" content={ogImage} />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={title} />
+  <meta name="twitter:description" content={description} />
+  <meta name="twitter:image" content={ogImage} />
   <meta name="theme-color" content="#F97316" />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <script type="application/ld+json" set:html={jsonLd} />
   <style>@import '../styles/fonts.css';</style>
 </head>
 <body>
