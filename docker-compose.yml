@@ -13,6 +13,9 @@ services:
       - "3000"
     volumes:
       - ./data:/app/data
+      - /Volumes/data/secrets/stdout_admin_email:/run/secrets/stdout_admin_email:ro
+      - /Volumes/data/secrets/stdout_admin_password:/run/secrets/stdout_admin_password:ro
+      - /Volumes/data/secrets/stdout_session_secret:/run/secrets/stdout_session_secret:ro
     environment:
       - TZ=America/Chicago
       - NODE_ENV=production
@@ -21,9 +24,9 @@ services:
       - DB_PATH=/app/data/stdout-site.db
       - SEED_DIR=/app/community-seed
       - SITE_URL=https://stdout.seayniclabs.com
-      - ADMIN_EMAIL=${ADMIN_EMAIL}
-      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
-      - SESSION_SECRET=${SESSION_SECRET:-}
+      - ADMIN_EMAIL_FILE=/run/secrets/stdout_admin_email
+      - ADMIN_PASSWORD_FILE=/run/secrets/stdout_admin_password
+      - SESSION_SECRET_FILE=/run/secrets/stdout_session_secret
     networks:
       - stdout-site-net
 
