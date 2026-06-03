@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@astrojs/node": "^9.5.4",
+    "@astrojs/sitemap": "^3.7.3",
     "@node-rs/argon2": "^2.0.2",
     "astro": "^6.4.2",
     "better-sqlite3": "^12.6.2",
