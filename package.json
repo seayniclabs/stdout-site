@@ -36,6 +36,7 @@
     "playwright": "^1.60.0"
   },
   "overrides": {
-    "svgo": ">=4.0.1"
+    "svgo": ">=4.0.1",
+    "esbuild": "^0.28.1"
   }
 }
