@@ -1,0 +1,135 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Why we don't charge per user — StdOut" description="Why flat-rate pricing makes infrastructure monitoring better, more collaborative, and more reliable for teams.">
+  <article class="manifesto-container">
+    <header class="manifesto-header">
+      <div class="manifesto-tag">MANIFESTO</div>
+      <h1>Why we don't charge per user</h1>
+    </header>
+
+    <div class="manifesto-content">
+      <p>
+        We don't charge per user. When we built StdOut, we decided on a flat-rate pricing model: $24 a month for cloud teams, or a $149 one-time payment if you self-host.
+      </p>
+
+      <p>
+        Contrast this with the industry standard. Competitors like Rootly charge $20 per user, per month. On paper, it sounds reasonable. In practice, it breaks how teams actually respond to incidents.
+      </p>
+
+      <p>
+        Here is why we reject per-user pricing, and why we believe flat rates are better for incident management.
+      </p>
+
+      <h2>Incidents are collaborative, not siloed</h2>
+      <p>
+        When a system breaks at 2 a.m., you do not want access control lists deciding who can help. You want the database engineer, the frontend developer, and the system administrator all looking at the same dashboard, sharing context, and working together.
+      </p>
+      <p>
+        Per-user pricing forces a compromise. To keep budgets in check, finance departments restrict software seats. Only a select group of "primary incident managers" get licenses. When they need to pull in a database expert, they either waste time sharing credentials, export logs into Slack, or work in the dark.
+      </p>
+      <p>
+        Incident management tools should encourage collaboration. A per-user fee does the opposite: it taxes collaboration. With a flat rate, you can invite your whole team. Everyone gets the context they need to resolve issues faster.
+      </p>
+
+      <h2>Predictable billing, no surprise invoices</h2>
+      <p>
+        As your engineering organization grows, your infrastructure tools shouldn't punish you for hiring. With per-user seats, a growing team means a constantly changing invoice. A manager has to approve every new team member, leading to delays and administrative overhead.
+      </p>
+      <p>
+        Our pricing is simple:
+      </p>
+      <ul>
+        <li><strong>$24/month</strong> for the cloud-hosted Shop tier, regardless of how many members you add.</li>
+        <li><strong>$149 one-time</strong> for self-hosting. You buy it once, run it on your own server, and keep it forever.</li>
+      </ul>
+      <p>
+        You know exactly what you will pay this month, next month, and next year.
+      </p>
+
+      <h2>Aligned incentives</h2>
+      <p>
+        Our goal is to help you build a reliable incident memory. The more people who contribute runbooks, post-mortems, and stack descriptions, the richer your incident memory becomes. The next time a service fails, whoever is on call has immediate access to how it was fixed last time.
+      </p>
+      <p>
+        If you limit seats to save money, you lose those contributions. The developers who write the code won't document their resolutions in the shared system. Your incident memory remains incomplete.
+      </p>
+      <p>
+        By removing the per-user gate, we ensure that every engineer can document their fixes, search past resolutions, and contribute to the team's collective operational knowledge.
+      </p>
+
+      <hr class="divider" />
+
+      <p class="manifesto-footer">
+        We want StdOut to be a utility—as essential and unobtrusive as your terminal. Flat-rate pricing aligns our incentives with yours: we focus on building a fast, reliable tool, and you focus on keeping your infrastructure online.
+      </p>
+    </div>
+  </article>
+</Layout>
+
+<style>
+  .manifesto-container {
+    max-width: 680px;
+    margin: 40px auto 80px;
+    font-family: var(--font-ui);
+    padding: 0 16px;
+  }
+  .manifesto-header {
+    margin-bottom: 32px;
+  }
+  .manifesto-tag {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--accent-light);
+    letter-spacing: 0.1em;
+    margin-bottom: 8px;
+  }
+  .manifesto-container h1 {
+    font-size: 36px;
+    font-weight: 800;
+    line-height: 1.25;
+    color: var(--text);
+    letter-spacing: -0.02em;
+  }
+  .manifesto-content {
+    margin-top: 24px;
+  }
+  .manifesto-container p {
+    font-size: 16px;
+    line-height: 1.75;
+    color: var(--text-secondary);
+    margin-bottom: 24px;
+  }
+  .manifesto-container h2 {
+    font-size: 22px;
+    font-weight: 700;
+    margin: 40px 0 16px;
+    color: var(--text);
+    letter-spacing: -0.01em;
+  }
+  .manifesto-container ul {
+    margin-bottom: 24px;
+    padding-left: 20px;
+    list-style-type: square;
+  }
+  .manifesto-container li {
+    font-size: 16px;
+    line-height: 1.75;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+  }
+  .manifesto-container strong {
+    color: var(--text);
+  }
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 48px 0;
+  }
+  .manifesto-footer {
+    font-style: italic;
+    color: var(--text-muted) !important;
+  }
+</style>
