@@ -26,7 +26,7 @@
     "astro": "^5.17.1",
     "better-sqlite3": "^12.6.2",
     "drizzle-orm": "^0.45.1",
-    "nanoid": "^5.1.6",
+    "nanoid": "^5.1.16",
     "resend": "^6.9.3"
   },
   "devDependencies": {
@@ -36,7 +36,10 @@
     "playwright": "^1.60.0"
   },
   "overrides": {
-    "svgo": ">=4.0.1",
-    "esbuild": "^0.28.1"
+    "svgo": ">=4.0.2",
+    "esbuild": "^0.28.1",
+    "js-yaml": ">=4.3.1 <5",
+    "postcss": ">=8.5.26",
+    "sharp": ">=0.35.3"
   }
 }
