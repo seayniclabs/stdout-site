@@ -19,7 +19,7 @@
     "test:ratelimit": "npx playwright test --config=tests/playwright.config.ts --grep @ratelimit"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.52.0",
+    "@anthropic-ai/sdk": "^0.123.0",
     "@astrojs/markdown-remark": "^7.3.0",
     "@astrojs/node": "^11.1.5",
     "@astrojs/sitemap": "^3.7.1",
