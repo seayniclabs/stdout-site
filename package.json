@@ -25,7 +25,7 @@
     "@astrojs/sitemap": "^3.7.1",
     "@node-rs/argon2": "^2.0.2",
     "astro": "^7.2.10",
-    "better-sqlite3": "^12.6.2",
+    "better-sqlite3": "^13.0.3",
     "drizzle-orm": "^0.45.1",
     "nanoid": "^5.1.16",
     "resend": "^6.9.3"
