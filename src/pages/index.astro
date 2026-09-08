@@ -56,8 +56,25 @@ if (user) {
   })} />
   <style>@import '../styles/fonts.css';</style>
   <script defer src="https://analytics.seaynicroute.com/data" data-website-id="6794355e-d87a-4022-9062-4d473bdc4716"></script>
+  <!--
+    Shared Seaynic Labs nav (Charlie, 2026-09-08): a framework-agnostic Web
+    Component served from the hub, not a package/dependency — this site
+    stays independently deployed (Cloudflare Pages), this is just a
+    script tag. Updating dock.js on the hub updates every satellite
+    site's nav without redeploying this one. No Subresource Integrity
+    hash yet — the file is still actively changing during initial
+    rollout; add integrity="sha384-..." once it's stable.
+    TODO: swap this URL from localhost:3005 to https://seayniclabs.com
+    once the hub itself is deployed to production — task #2426.
+    position="bottom-right" (the component's own default) was chosen
+    deliberately after the bottom-center default covered Talos's own
+    chat input on that site — corners are safer on a page whose bottom
+    content isn't known in advance.
+  -->
+  <script src="http://localhost:3005/dock.js" defer></script>
 </head>
 <body>
+  <seaynic-dock active="stdout"></seaynic-dock>
   <!-- Nav -->
   <nav class="ln">
     <a href="/" class="ln-brand">
