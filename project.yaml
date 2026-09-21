@@ -1,0 +1,27 @@
+project: stdout-site
+repo: ~/Projects/stdout-site
+last_reviewed: 2026-09-15
+last_commit:
+  sha: ba3d292175cafa7b92f415bda3363378fbb603f8
+  date: 2026-09-08
+  subject: "Add shared Seaynic Labs nav (seaynic-dock Web Component)"
+commit_count: 357
+
+recent_summary: >
+  357 commits total on main. Recent work: shared Seaynic Labs nav
+  (seaynic-dock web component), Astro 7.2.10 + @astrojs/node upgrade
+  (fixes 1 HIGH CVE), 5 additional HIGH CVEs patched via dependency
+  overrides (SEC-003), fly.toml ported from a divergent origin/main
+  history, flat-rate pricing manifesto published, authorization bypass
+  implementation + gap-to-task automation completed, esbuild override
+  clears dev-server RCE CVEs (high severity count now 0).
+
+next_action: >
+  Verify the fly.toml merge (6649f94) and Astro/@astrojs/node upgrade
+  (82a15b1) haven't regressed the production build at
+  https://stdout.seayniclabs.com — run `npm run build && npm run
+  test:smoke`, then confirm the Fly.io deploy target matches
+  THINKPAD_DEPLOY.md (ThinkPad 192.168.68.89:8112 runs this per
+  CONTEXT-DEPLOYMENT.md, not the Mac). Follow with PROJECT_HEADER.md's
+  open Next Steps: ticketing integrations (Jira/GitHub/Zendesk) and
+  Observatory auto-escalation.
