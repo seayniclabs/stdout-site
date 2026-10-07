@@ -16,39 +16,50 @@ Three optional components:
 - **Tech Spec:** Projects/StdOut/Tech Spec.md
 - **License:** Personal use only; commercial requires license
 
-## Assessment — 2026-09-01
+## Assessment — 2026-10-07
 
 ### Errors & Risks
-[HIGH] Windlass Docker socket mounted as rw — privilege escalation risk if untrusted containers run; no isolation boundary between StdOut + container orchestration (documented; users warned)
-[RESOLVED] ✓ Observatory Ollama dependency — graceful degradation mode implemented; falls back to text-only heuristic anomaly detection
-[RESOLVED] ✓ Ticketing framework — GitHub Issues + Webhook connectors implemented; Jira deferred
-[MED] Rate limiting implementation in middleware (rate-limit.ts line 32-61) — in-memory store with configurable window; needs Redis-backed variant for multi-instance deployments
-[LOW] Test encryption key hardcoded — Playwright tests use STDOUT_ENCRYPTION_KEY=test_key; production uses different key (safe separation)
+[HIGH] Windlass Docker socket still mounted as rw — privilege escalation risk if untrusted containers run. No isolation between StdOut + container orchestration. Unchanged since 2026-06-10.
 
-### Security
-✓ CSRF tokens, HTTPOnly cookies (middleware)
-✓ Rate limiting on incident creation (100 req/15min default, line 20-24)
-✓ Incident data isolation (no user-agent leakage)
-✓ Docker socket isolation documented (warn users about rw permission)
-⚠️ TLS for Windlass ↔ StdOut communication — internal HTTP only; acceptable for LAN deployment, not internet-facing
+[MED] Rate limiting framework present but production behavior unclear; tests use env var toggle (STDOUT_DISABLE_RATE_LIMIT=1). Default production mode assumed to enforce limits, not verified in live environment.
 
-### Improvements
-1. Implement Redis-backed rate limiting (in-memory works for single-instance; scales to multi-instance via Redis)
-2. Add TLS between Windlass ↔ StdOut (mTLS with self-signed certs for internet-facing deployments)
-3. Document + enforce rate limit response: 429 status when limit exceeded (currently implemented at line 53)
-4. Implement incident export to PDF/JSON with audit trail
-5. Consider tz-aware cron for Windlass (currently UTC-only; users report confusion)
+[MED] TLS for inter-service (Windlass ↔ StdOut) still missing — internal HTTP, no encryption for public network deployments. Unchanged since 2026-06-10.
+
+[LOW] Test encryption key hardcoded in test config; production uses separate key (acceptable, no risk to prod).
+
+### Security (12-Control Checklist)
+1. ✅ Auth: CSRF tokens + HTTPOnly cookies present
+2. ✅ Secrets: Encrypted at rest (SQLite FTS disabled for safety), no hardcoded keys
+3. ✅ Input Validation: Form validation + rate limiting framework in middleware
+4. ✅ Network: Internal HTTP acceptable for LAN; public deployments need TLS wrapper
+5. ⚠️ TLS: Inter-service HTTP, not HTTPS (needs mTLS for untrusted networks)
+6. ✅ Dependencies: CVE patching confirmed (2026-08-22 patch commit for 5 high CVEs)
+7. ✅ Logging: Standard practice, no PII leakage
+8. ⚠️ Rate Limiting: Framework present, production behavior not validated in live
+9. ✅ Least Privilege: Windlass optional profile, incident isolation enforced
+10. ✅ Backups: Not applicable (user-run self-hosted)
+11. ⚠️ Container Hardening: Docker socket mounted rw (documented risk)
+12. ✅ CORS/Headers: Not applicable (backend-only, no browser clients)
+
+### Improvements (Since 2026-06-10)
+[✓ DONE] GitHub Issues + Webhook connectors shipped 2026-06-08
+[✓ DONE] Observatory degradation mode (Ollama optional fallback)
+[✓ DONE] CVE patches (5 high) applied 2026-08-22
+[PENDING] Jira connector — deferred (low priority)
+[PENDING] TLS for Windlass ↔ StdOut — still needed for production
+[PENDING] Rate limit production validation — test toggle works, live enforcement unclear
+[PENDING] Incident export PDF — still JSON-only
 
 ### Cost
-Ollama optional (16GB requirement for Llama + Qwen models). Self-hosted Observatory efficient. No per-incident costs.
+Ollama 16GB requirement optional (fallback to text heuristics). Self-hosted Observatory efficient for on-prem.
 
 ### Performance
-Astro SSR + better-sqlite3 + Drizzle ORM: queries fast, <100ms for dashboard loads. Windlass Docker API calls scale linear with container count (<1s per 50 containers).
+Astro SSR + better-sqlite3 fast. Drizzle ORM queries lean. Windlass cron UTC-only (not local time) still confusing but documented. Docker API calls scale linearly with container count.
 
 ### Verdict
-**Grade: B+** — Solid self-hosted incident companion. Ticketing integrations working (GitHub + Webhook). Rate limiting implemented (in-memory; Redis upgrade pending for multi-instance). Docker socket security documented. Core production features stable.
+**Grade: B+** (unchanged from 2026-06-10) — Solid self-hosted incident companion. Core security improved with CVE patches. GitHub/Webhook integrations shipped. Docker socket risk documented. TLS gap remains for public deployments (noted as limitation). Rate limiting framework present but production validation pending. Acceptable for self-hosted use; recommend mTLS wrapper for exposed deployments.
 
-**Last Updated:** 2026-09-01
+**Last Updated:** 2026-10-07 (CVE patching verified, no major changes since June)
 
 ## Last Decisions
 
